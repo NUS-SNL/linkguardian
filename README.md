@@ -49,8 +49,8 @@ Both the [simulator/](./simulator/) and the [switch_impl/](./switch_impl/) direc
 ## SIGCOMM'23 Artifact Evaluation
 
 For our SIGCOMM'23 paper, there are two artifacts to be evaluated: the [simulator/](./simulator/) and the [switch_impl/](./switch_impl/). Both artifacts can be evaluated independently by following the provided AE README files:
-* [Simulator AE README](./simulator/sigcomm23-ae/README.md)
-* [Switch Implementation AE README](./switch_impl/sigcomm23-ae/README.md)
+* [Simulator AE README](./simulator/sigcomm23-ae/README.md) (Expected time: ~1 hr)
+* [Switch Implementation AE README](./switch_impl/sigcomm23-ae/README.md) (Expected time: ~1 to 1.5 hrs)
 
 ---
 ### Citation
