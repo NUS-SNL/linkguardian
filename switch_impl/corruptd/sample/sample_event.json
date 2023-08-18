@@ -1,0 +1,8 @@
+{
+    "event": "SWITCH-1",
+    "switch_id" : "1",
+    "dev_port" : "0",
+    "mcast_grp": "3",
+    "dummy_pkts" : "3"
+}
+

@@ -1,0 +1,6 @@
+name: lg
+channels:
+  - defaults
+dependencies:
+  - python=3
+  - scapy

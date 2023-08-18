@@ -1,0 +1,7 @@
+log/*
+!log/.keep
+bin/*
+!bin/.keep
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake

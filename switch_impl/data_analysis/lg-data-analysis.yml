@@ -1,0 +1,12 @@
+name: lg-data-analysis
+channels:
+  - defaults
+dependencies:
+  - python=3
+  - tabulate
+  - ipython
+  - termcolor
+  - pandas
+  - pylint
+  - jupyter
+  - scapy
