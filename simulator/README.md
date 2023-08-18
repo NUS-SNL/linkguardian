@@ -8,14 +8,14 @@ simulator used by Zhuo et al. and described in the [SIGCOMM'17 paper -
 CorrOpt](https://dl.acm.org/doi/10.1145/3098822.3098849) (section 7.1).
 
 If you haven't read our paper, we provide a brief summary of this simulator's design
-[here](/doc/design.md "Design Summary").
+[here](./doc/design.md "Design Summary").
 
 ## Installation and Usage
 
 ### Note for Artifact Evaluation
 If you want to simply run the simulator for artifact evaluation, we provide a
 convenient Docker container image. Please refer to the README and Makefile in
-the [sigcomm23-ae/](/sigcomm23-ae/) directory.
+the [sigcomm23-ae/](./sigcomm23-ae/) directory.
 
 If you want to have a local installation of the simulator, for example, to tweak
 it or build on top of it, please continue reading.
@@ -79,7 +79,7 @@ parameters; and
 
 ## Provided Simulation Configs and Failure Trace
 We provide four different simulation configs used in our paper's evaluation
-under [simulation_configs/sigcomm23_eval](simulation_configs/sigcomm23_eval/).
+under [simulation_configs/sigcomm23_eval](./simulation_configs/sigcomm23_eval/).
 The four configs result from the fact that we have two solutions (`CorrOpt` and
 `LinkGuardian + CorrOpt`) each to be run with two capacity constraints (50% and
 75%). 
@@ -87,15 +87,15 @@ The four configs result from the fact that we have two solutions (`CorrOpt` and
 All four configurations use a large [FB Fabric
 topology](https://engineering.fb.com/2014/11/14/production-engineering/introducing-data-center-fabric-the-next-generation-facebook-data-center-network/)
 consisting of ~100k switch-to-switch
-links and a corresponding 1-year long link failure trace provided [here](/eval_traces/sigcomm23-eval/fbfabric_100k_os1_mttf10k-trace.json). 
+links and a corresponding 1-year long link failure trace provided [here](./eval_traces/sigcomm23-eval/fbfabric_100k_os1_mttf10k-trace.json). 
 
 ## Trace Generation
-The [trace](/eval_traces/sigcomm23-eval/fbfabric_100k_os1_mttf10k-trace.json)
+The [trace](./eval_traces/sigcomm23-eval/fbfabric_100k_os1_mttf10k-trace.json)
 that was used in our paper's evaluation was generated using the trace generator
 provided in this repository and described in [our
 paper](https://www.comp.nus.edu.sg/~bleong/publications/sigcomm23-linkguardian.pdf)
 (Appendix D). Please refer to
-[trace_generator/](/trace_generator/) for more details.
+[trace_generator/](./trace_generator/) for more details.
 
 
 

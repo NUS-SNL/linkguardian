@@ -6,7 +6,7 @@ LinkGuardian](https://www.comp.nus.edu.sg/~bleong/publications/sigcomm23-linkgua
 *adapted* for running the experiments from our paper on another testbed setup.
 
 ### Repository Contents
-* `corruptd`: Control plane daemon to detect corruption and enable LinkGuardian
+* `corruptd`: Control plane daemon to detect corruption and enable LinkGuardian.
 * `data_analysis`: Scripts for analyzing the data from key experiments.
 * `doc`: Additional supplementary documentation.
 * `expt_scripts`: Scripts for running key experiments. 
@@ -38,11 +38,5 @@ requirements:
 
 Please refer to [sigcomm23ae/README.md](./sigcomm23-ae/README.md) for detailed
 instructions and top-level scripts for SIGCOMM'23 artifact evaluation.
-
-
-
-
-
-
 
 
