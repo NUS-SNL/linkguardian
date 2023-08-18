@@ -1,0 +1,9 @@
+{
+    "topology": {"topo_type": 3, "topo_params": {"num_pods": 261, "oversubscription": 1 ,"link_capacity": 100, "tors_per_pod": 48}},
+    "_topology_info": "A dict with topo_type (enum TopoType) and topo_params",
+    "failure_event_trace": "./eval_traces/sigcomm23-eval/fbfabric_100k_os1_mttf10k-trace.json",
+    "solution": 3,
+    "solution_params": {"capacity_constraint_percent": 50},
+    "_solution_params_info": "A dict with solution params",
+    "output_dir": "./output_files/sigcomm23_eval"
+}

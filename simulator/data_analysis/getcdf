@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# -ne 1 ];then
+	echo "Usage: $0 <file contain single dimensional values>"
+	exit 1
+fi
+
+inputFile=$1
+
+cat $inputFile | sort -n | uniq --count | awk 'BEGIN {sum = 0} {sum=sum+$1; records[NR,0]=$2;records[NR,1]=$1;records[NR,2]=sum;} END{for(i=1;i<=NR;i++){print records[i,0],records[i,1],records[i,2],records[i,2]/sum}}'  

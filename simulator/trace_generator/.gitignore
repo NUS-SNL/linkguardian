@@ -1,0 +1,3 @@
+output_files/*
+test_files/*
+failure_rate_plots/*

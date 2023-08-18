@@ -1,0 +1,9 @@
+{
+    "dist_name": "lossrates-corropt-sigcomm17",
+    "distribution": [
+        {"start": 1e-8, "end": 9e-6, "percent_fraction": 47.23},
+        {"start": 1e-5, "end": 9.9e-5, "percent_fraction": 18.43},
+        {"start": 1e-4, "end": 9.99e-4, "percent_fraction": 21.67},
+        {"start": 1e-3, "end": 1e-2, "percent_fraction": 12.67}
+    ]
+}

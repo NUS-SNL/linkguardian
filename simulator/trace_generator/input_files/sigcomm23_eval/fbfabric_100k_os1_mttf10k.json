@@ -1,0 +1,10 @@
+{
+    "name": "fbfabric_100k_os1_mttf10k",
+    "topo_type": 3,
+    "_topo_type_info": "topo_type follows the TopoType enum values",
+    "topo_params": {"num_pods": 261, "oversubscription": 1 ,"link_capacity": 100, "tors_per_pod": 48},
+    "mttf_hrs" : 10000,
+    "max_duration_hrs": 9000,
+    "loss_rate_dist_file": "./dist_data/loss_rates_dist-corropt.json",
+    "output_dir": "../output_files/trace_gen_output"
+}

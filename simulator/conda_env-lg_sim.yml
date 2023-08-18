@@ -1,0 +1,15 @@
+name: lg-sim
+channels:
+  - defaults
+dependencies:
+  - python=3
+  - pylint
+  - networkx
+  - ipython
+  - jupyter
+  - termcolor
+  - matplotlib
+  - tabulate
+  - pandas
+  - tqdm
+  - progress
