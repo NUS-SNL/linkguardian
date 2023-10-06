@@ -4,8 +4,7 @@
 
 The goal of this AE submission is to show that the switch implementation
 artifact of LinkGuardian is *functional*. To that end, we provide scripts and
-instructions to run *key* experiments from [our paper](https://rajkiranjoshi.github.io/files/papers/sigcomm23-linkguardian.pdf) on a real hardware testbed
-and produce *qualitatively* similar results in a reasonable amount of
+instructions to run *key* experiments from [our paper](https://rajkiranjoshi.github.io/files/papers/sigcomm23-linkguardian.pdf) on a real hardware testbed. The goal is to allow the artifact evaluators to produce *qualitatively* similar results in a reasonable amount of
 time.
 
 This README will guide you through the evaluation process which consists of the following steps:
@@ -59,22 +58,23 @@ accounts, copying/distributing the licensed Intel P4Studio SDE, etc.
 
 ### Understanding and accessing the testbed setup
 
-The following figure shows the testbed setup that we have prepared for the
+The following topology diagram shows the testbed setup that we have prepared for the
 artifact evaluation.
 
 ![AE Testbed](../doc/linkguardian_ae_testbed.svg)
+*Topology Diagram*
 
-This corresponds to the path h4-sw8-sw4-sw2-sw6-sw10 shown in Figure 7 in
-[our paper](https://rajkiranjoshi.github.io/files/papers/sigcomm23-linkguardian.pdf). There are two physical servers, lumos and caelus, representing h4 and
-h8 respectively. Each server is equipped with a 100G NVIDIA Mellanox CX5 100G
+The cabling topology corresponds to the path h4-sw8-sw4-sw2-sw6-sw10 shown in Figure 7 in
+[our paper](https://rajkiranjoshi.github.io/files/papers/sigcomm23-linkguardian.pdf). There are two physical servers, named **lumos** and **caelus**, representing h4 and
+h8 respectively. Each server is equipped with a NVIDIA Mellanox CX5 100G
 NIC interface that is put inside a network namespace called `lg`. There are a
-total of three Tofino1 switches:
- * tofino1a --> sw2. Runs the LinkGuardian sender implementation (`sender.p4`)
- * tofino1c --> sw6. Runs the LinkGuardian receiver implementation (`receiver.p4`)
- * p4campus-proc1 --> emulates the rest of the physical topology (sw8, sw4, and sw10)
+total of three physical Tofino1 switches:
+ * **tofino1a** acts as sw2 shown in Figure 7. It runs the LinkGuardian sender implementation (`sender.p4`)
+ * **tofino1c** acts as sw6 shown in Figure 7. It runs the LinkGuardian receiver implementation (`receiver.p4`)
+ * **p4campus-proc1** emulates the rest of the physical topology (sw8, sw4, and sw10)
    through 100G loopback cables (`topo.p4`)
 
-The numbering `a/b(c)` denotes the `a/b` front-panel port number and the
+In the above topology diagram, the numbering `a/b(c)` denotes the `a/b` front-panel port number and the
 corresponding devport number `c`.
 
 > [!NOTE] 
@@ -103,7 +103,7 @@ environment:
   `driver` and `bfrt`. The `driver` session is running the `switchd` program. On
   the other hand, the `bfrt` session is running a `bfrt_python` shell providing
   you with a CLI interface to interact with LinkGuardian sender and the
-  receiver. However, you won't be required interact manually with the
+  receiver. However, you won't be required to interact manually with the
   `bfrt_python` shell as we have provided several automation scripts (see below).
 
 
@@ -111,6 +111,8 @@ environment:
 You will have ssh access to lumos which will also serve as a ssh jumphost
 allowing you access to caelus and the switches. We will provide you with a
 ssh config file (over HotCRP) for easy access through the jumphost.
+
+This repository (`linkguardian`) has been already cloned on the switches and the servers in the home directory of the user `sigcomm23ae`.
 
 For terminal setup, please open your terminal application and setup three terminal tabs as
 follows.
@@ -141,7 +143,7 @@ running the experiments.
 ```
 ssh tofino1a-ae
 ```
-Once you have logged into the tofino1a successfully, connect to the tmux session
+Once you have logged into tofino1a successfully, connect to the tmux session
 `bfrt` to access the bfrt_python CLI for the LinkGuardian sender switch.
 ```
 tmux a -t bfrt
@@ -229,6 +231,8 @@ correctly.
 
 ### Compiling the P4 source code
 
+*Estimated Time Required: 3-4 mins*
+
 On lumos (terminal tab 1), given that you are inside the directory
 `~/linkguardian/switch_impl/sigcomm23-ae/expt_scripts-ae`, run the following
 command to compile the P4 source code:
@@ -237,25 +241,25 @@ command to compile the P4 source code:
 ```
 
 This will compile the P4 programs `sender.p4`, `receiver.p4`, and `topo.p4` on
-the respective Tofino1 switches (see the above figure). You should be able to
+the respective Tofino1 switches (see the above topology diagram). You should be able to
 see the P4Studio compilation output on lumos itself (terminal tab 1).
 
 
 ### Running switch-to-switch stress test
 
+*Estimated Time Required: 3-4 mins*
+
 The goal here is to run the stress test corresponding to Figure 8 of the paper.
 Specifically, we will do the following steps in order:
 1. Set the loss rate on tofino1c to around 10<sup>-3</sup>.
 2. Using pktgen, send 100 million packets from tofino1a to tofino1c on the corrupting link
-   (link 3 in the figure above) while running LinkGuardian and observe the
-   effective loss rate (in terminal tab 2 i.e. tofino1a CLI).
-3. Repeat step 2 above with LinkGuardianNB and again observe the effective loss
-   rate (in terminal tab 2 i.e. tofino1a CLI).
+   (link 3 in the figure above) while running LinkGuardian.
+3. Repeat step 2 above with LinkGuardianNB.
 4. Process the other data collected during steps 2 and 3, and compute the
    overall results including the effective link speed (Figure 8) as well as packet buffer
    overheads (Figure 14).
 
-To set the random drop loss rate, run the following command on lumos (terminal
+To set the random drop loss rate of 10<sup>-3</sup>, run the following command on lumos (terminal
 tab 1):
 ```
 ./common/enable_pkt_dropping.sh
@@ -338,10 +342,22 @@ Specifically, we will do the following steps in order:
 3. We will analyze the packet traces (pcap files) from the above experiments to
    compute the FCTs and then observe the results.
 
-Enable packet dropping first (default loss rate of 10<sup>-3<sup>):
+Enable packet dropping with a loss rate of 10<sup>-3</sup>:
 ```
 ./common/enable_pkt_dropping.sh
 ```
+
+Then observe the status of the receiver switch (tofino1c) in terminal tab 3. You
+should see an output which includes the following line:
+```
+....
+LOSS RATE: 9.994507e-04
+....
+```
+(Note: Packet dropping was already enabled in the above stress test. This is just to ensure that we indeed have packet dropping enabled.)
+
+
+
 Disable LinkGuardian's protection:
 ```
 ./common/disable_protection.sh
@@ -379,8 +395,8 @@ You should see the following output on terminal tab 2 (sender switch's status):
 Protected Port(s) (1): 32(1)
 ...
 ```
-This means that the number of protected ports by LinkGuardian is 1.`32(1)` means
-that LinkGuardian is maintaining packet ordering on devport 32.  
+This means that the number of protected ports by LinkGuardian is 1. `32(1)` means
+that LinkGuardian is protecting devport 32 using link-local retransmission while maintaining packet ordering.
 
 Now, again run 5K flow trials:
 ```
@@ -397,8 +413,8 @@ You should see the following output on terminal tab 2 (sender switch's status):
 Protected Port(s) (1): 32(0)
 ...
 ```
-This means that the number of protected ports by LinkGuardian is 1.`32(0)` means
-that LinkGuardianNB is running on devport 32 and packet ordering will not be
+This means that the number of protected ports by LinkGuardian is 1. `32(0)` means
+that LinkGuardianNB is protecting devport 32 and packet ordering will *not* be
 maintained.
 
 Now, again run 5K flow trials:
@@ -412,7 +428,7 @@ Now, let's process the data from all 3 experiments and compute the FCTs:
 ```
 
 Once the data processing is over, you can view the combined result of all 3
-experiments with the following command:
+experiment runs with the following command:
 ```
 ./fct_expt_tcp/display_combined_result.sh
 ```
@@ -435,7 +451,7 @@ std       144.750    19.528      20.797
 count    5000.000  5000.000    5000.000
 ```
 
-This result should be qualitatively similar to that presented in the paper and should show a clear reduction in the tail FCTs with LinkGuardian and LinkGuardianNB. 
+The 3 columns correspond to the 3 experiment runs: no protection, protection with LinkGuardian, and protection with LinkGuardianNB. This result should be qualitatively similar to that presented in the paper and should show a clear reduction in the tail FCTs with LinkGuardian and LinkGuardianNB. 
 
 ### Running the RDMA FCT experiment
 TBA: We are in the process of setting up the RDMA sender/receiver in the AE testbed setup. We will update this section soon!
