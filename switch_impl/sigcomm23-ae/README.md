@@ -62,7 +62,7 @@ The following topology diagram shows the testbed setup that we have prepared for
 artifact evaluation.
 
 ![AE Testbed](../doc/linkguardian_ae_testbed.svg)
-*Topology Diagram*
+<br>*Topology Diagram*
 
 The cabling topology corresponds to the path h4-sw8-sw4-sw2-sw6-sw10 shown in Figure 7 in
 [our paper](https://rajkiranjoshi.github.io/files/papers/sigcomm23-linkguardian.pdf). There are two physical servers, named **lumos** and **caelus**, representing h4 and
