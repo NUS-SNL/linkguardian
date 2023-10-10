@@ -13,7 +13,7 @@ This README will guide you through the evaluation process which consists of the 
 3. Running switch-to-switch stress test experiment (3-4 minutes)
 4. Running the TCP FCT experiment (18-20 mins)
 5. Running the RDMA FCT experiment (TBA)
-6. Running the throughput experiment ()
+6. Running the throughput experiment (6-8 mins)
 
 
 ### System Requirements
@@ -459,6 +459,8 @@ TBA: We are in the process of setting up the RDMA sender/receiver in the AE test
 
 ### Running the throughput experiment
 
+*Estimated Time Required: 6-8 mins*
+
 The goal here is to run the throughput test corresponding to Table 3 of the paper.
 Specifically, we will do the following steps in order:
 1. We will change the speed of all links to 10G (figure above). This will allow
@@ -471,27 +473,40 @@ Specifically, we will do the following steps in order:
    control and look at the steady state average throughput during the middle
    60s.
 
-Change the link speeds of all links to 10G:
-```
-./common/change_link_speeds.sh 10
-```
-This script will also wait and check if the links have come UP with 10G link
-speeds.
+Note that LinkGuardian's system parameters (`ackNoTimeout`,
+`resumeThreshold`, and `pauseThreshold`) also need to be changed with a change
+in the link speed. Due to a compiler issue, in the current implementation, the
+`ackNoTimeout` parameter can only be changed at compile time.
 
-Now, reset the counters and other state on all the switches for a fresh
-experiment environment:
+To this end, for the ease of artifact evaluation, we provide `receiver_10g.p4`
+which has been already compiled on the tofino1c switch. 
+
+To change the whole system setup to 10G link speeds, first stop the bf_switchd
+driver process on all the switches:
 ```
-./common/reset_all_switches.sh
+./teardown_all_switches.sh 
 ```
 
-Check the connectivity between lumos_lg and caelus_lg:
+Now, setup the whole testbed again with system parameters for 10G links:
 ```
-./common/check_connectivity.sh
+./setup_all_switches.sh 10G
 ```
-The ping request-response packets should show connectivity. It is possible that some ping
-packets might get dropped in case packet dropping is already enabled on link 3.
+Wait for the setup script to finish with a connectivity check using ping:
+```
+...
+Checking connectivity via ping... 
+PING 10.2.2.2 (10.2.2.2) 56(84) bytes of data.
+64 bytes from 10.2.2.2: icmp_seq=1 ttl=64 time=0.289 ms
+64 bytes from 10.2.2.2: icmp_seq=2 ttl=64 time=0.287 ms
+64 bytes from 10.2.2.2: icmp_seq=3 ttl=64 time=0.216 ms
+64 bytes from 10.2.2.2: icmp_seq=4 ttl=64 time=0.266 ms
+64 bytes from 10.2.2.2: icmp_seq=5 ttl=64 time=0.237 ms
 
-Make sure that packet dropping is enabled on link 3 (default loss rate of 10<sup>-3<sup>):
+--- 10.2.2.2 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 828ms
+rtt min/avg/max/mdev = 0.216/0.259/0.289/0.028 ms
+```
+Enable packet dropping on link 3 (see the [Topology Diagram](#understanding-and-accessing-the-testbed-setup) above) with loss rate of 10<sup>-3</sup>:
 ```
 ./common/enable_pkt_dropping.sh
 ```
@@ -523,9 +538,12 @@ Now, let's run the throughput experiment. The command below will run a CUBIC flo
 You should see the progress of the experiment as following:
 ```
 ...
+Sleeping 10 secs for performance mode to come into effect...
+Starting iperf3 server on caelus-ae... 
 *** Starting flow from lumos... 
 ```
-This should take around 90 seconds to finish.
+After the above prompt, no more log messages will be printed until the
+experiment finishes. This should take around 70 seconds to finish.
 
 Once the experiment is over, enable LinkGuardian on the link 3:
 ```
@@ -537,7 +555,7 @@ You should see the following output on terminal tab 2 (sender switch's status):
 Protected Port(s) (1): 32(1)
 ...
 ```
-This means that the number of protected ports by LinkGuardian is 1.`32(1)` means
+This means that the number of protected ports by LinkGuardian is 1. `32(1)` means
 that LinkGuardian is maintaining packet ordering on devport 32.  
 
 Now, again run the throughput experiment:
@@ -555,7 +573,7 @@ You should see the following output on terminal tab 2 (sender switch's status):
 Protected Port(s) (1): 32(0)
 ...
 ```
-This means that the number of protected ports by LinkGuardian is 1.`32(0)` means
+This means that the number of protected ports by LinkGuardian is 1. `32(0)` means
 that LinkGuardianNB is running on devport 32 and packet ordering will not be
 maintained.
 
@@ -564,7 +582,8 @@ Now, again run the throughput experiment:
 ./throughput_expt/run_expt.sh 10-3_lg_nb
 ```
 
-Now, let's process the data from all 3 experiments and compute the FCTs:
+Now, let's process the data from all 3 experiments and compute the average
+throughput:
 ```
 ./throughput_expt/process_all_expts.sh
 ```
@@ -572,9 +591,9 @@ Now, let's process the data from all 3 experiments and compute the FCTs:
 This should show you the final result of the throughput experiments like the
 following:
 ```
- expt_name	avg_throughput(Gbps)
-      10-3	2.77
-   10-3_lg	9.45
-10-3_lg_nb	9.45
+      expt_name		avg_throughput(Gbps)
+  No_Protection		2.61
+   LinkGuardian		9.45
+ LinkGuardianNB		9.45
 ```
 
