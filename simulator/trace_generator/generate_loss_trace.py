@@ -14,7 +14,6 @@ sys.path.append("../")
 from utils.lg_logging import *
 from topology.topology import TopoType
 from loss_rate_generator import LossRateGenerator
-from interarrival_time_generator import InterarrivalTimeGenerator
 from simulation.simulation import DATA_DUMPER_START_END_OFFSET, EventQueue, LinkEvent
 from simulation.link_event import LinkEventType
 
@@ -38,103 +37,6 @@ def is_valid_input_json(json_dict):
     return True
 
 generated_outfiles = []
-
-# ----------  OLD LOGIC FOR INTERARRIVAL TIME ---------- # 
-link_loss_event_dict = {} # key = link_id, val = [loss_event1_time, loss_event2_time..]
-
-def check_update_loss_event_time(link_id: int, curr_loss_time: float) -> float:
-    """ 
-    Updates loss event time if link has already seen a loss event
-
-    If link has not seen loss event before:
-        Record the current loss event, and return the same time
-    If link has seen loss event before:
-        Check the latest loss event time and compute the new time
-        Also, add the newly computed time
-    """
-    if link_id not in link_loss_event_dict:
-        link_loss_event_dict[link_id] = [curr_loss_time]
-        return curr_loss_time
-    else:
-        print(TERM_INFO_STR + "Found existing loss events for link {}: {}".format(link_id,link_loss_event_dict[link_id]))
-        prev_loss_time = link_loss_event_dict[link_id][-1] # get the latest time
-        new_time = prev_loss_time + curr_loss_time
-        link_loss_event_dict[link_id].append(new_time)
-       
-        print(TERM_INFO_STR + "Updated event time: {} + {} --> {}".format(prev_loss_time, curr_loss_time, new_time))
-        return new_time
-# ------------------------------------------------------ #
-
-# ----------  OLD LOGIC FOR FAILURE EVENTS ---------- # 
-
-# Reference:
-# Justin Meza, Tianyin Xu, Kaushik Veeraraghavan, and Onu Mutlu. A Large
-# Scale Study of Data Center Network Reliability. In Proceedings of IMC 2018.
-MTBF_MEAN = 10000  # hrs. picked the max of Fig 14
-WEIBULL_PARAM_SCALE_MTTF = MTBF_MEAN * 3600 # 10k hours
-
-def generate_failure_events(total_failure_events: int, num_links: int, loss_rate_generator: LossRateGenerator, interarrival_time_generator: InterarrivalTimeGenerator) -> list:
-    """ 
-    Generates the loss events and returns them as a list
-
-    Arguments:
-        total_failure_events: int. Total number of failure events to generate
-        num_links: int. Total number of links in the topology
-        loss_rate_generator: an instance of LossRateGenerator
-        interarrival_time_generator: an instance of InterArrivalGenerator
-
-    Returns:
-        list of loss events. Loss event is a tuple: (event_time, link_id, loss_rate) 
-    """
-    loss_event_list = []
-    
-    # start with an offset instead of zero
-    prev_loss_event_time = DATA_DUMPER_START_END_OFFSET 
-    for loss_event in range(total_failure_events):
-        # pick a link id uniformly randomly
-        link_id = np.random.randint(0, num_links) # [low, high)
-
-        # ----------  OLDEST LOGIC FOR INTERARRIVAL TIME ---------- # 
-        ## draw a loss event time from the netwiser  normal distribution
-        # loss_event_time = np.random.normal(MTBF_MEAN, MTBF_STD)
-
-        ## check update the loss event time
-        # loss_event_time = check_update_loss_event_time(link_id, loss_event_time)
-        # ------------------------------------------------------ #
-
-        # ------ OLD LOGIC: using Netwiser's dist as MTBF ------ #
-
-        # draw a loss interarrival time from the distribution
-        # interarrival_time = interarrival_time_generator.generate()
-
-        # # compute the loss event time
-        # loss_event_time = prev_loss_event_time + interarrival_time
-
-        # update the previous loss event time
-        # prev_loss_event_time = loss_event_time
-
-        # Pick the loss event time using netwiser's dist as MTTF
-        # loss_event_time = interarrival_time_generator.generate()
-
-        # ------------------------------------------------------ #
-
-        # Pick the loss event time using Weibull distribution
-        loss_event_time = round(WEIBULL_PARAM_SCALE_MTTF * np.random.weibull(WEIBULL_PARAM_SHAPE))
-
-        # update the time if same link had seen loss before
-        loss_event_time = check_update_loss_event_time(link_id, loss_event_time)
-
-        # add the initial time offset for the data dumper
-        loss_event_time += DATA_DUMPER_START_END_OFFSET
-    
-        # get the loss rate from the loss rate distribution
-        loss_rate = loss_rate_generator.generate()
-
-        # add the loss event to the list
-        loss_event_list.append((loss_event_time, link_id, loss_rate))
-
-    return loss_event_list
-# ------------------------------------------------------ #
 
 def generate_failure_events_weibull(max_trace_duration_hrs: int, num_links: int, loss_rate_generator: LossRateGenerator, mttf_hrs: int) -> typing.List[typing.Tuple[int, int, float]]:
     """ 
