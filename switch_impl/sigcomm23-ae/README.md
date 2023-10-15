@@ -7,14 +7,16 @@ artifact of LinkGuardian is *functional*. To that end, we provide scripts and
 instructions to run *key* experiments from [our paper](https://rajkiranjoshi.github.io/files/papers/sigcomm23-linkguardian.pdf) on a real hardware testbed. The goal is to allow the artifact evaluators to produce *qualitatively* similar results in a reasonable amount of
 time.
 
-This README will guide you through the evaluation process which consists of the following steps:
-1. Understanding and accessing the testbed setup (5 minutes)
-2. Compiling the P4 source code using Intel P4Studio (3-4 minutes)
-3. Running switch-to-switch stress test experiment (3-4 minutes)
+This README will guide you through the evaluation process which consists of the
+following steps:
+1. Understanding and accessing the testbed setup (5 mins)
+2. Compiling the P4 source code using Intel P4Studio (3-4 mins)
+3. Running switch-to-switch stress test experiment (3-4 mins)
 4. Running the TCP FCT experiment (18-20 mins)
-5. Running the RDMA FCT experiment (TBA)
+5. Running the RDMA FCT experiment (5-6 mins)
 6. Running the throughput experiment (6-8 mins)
 
+The estimated total time required is about **45-50 minutes**.
 
 ### System Requirements
 This AE guide requires a testbed consisting of 2 server hosts and 3 Tofino1
@@ -332,6 +334,9 @@ is around 10<sup>-9</sup>. Note that the experiments in the paper report the
 results across multiple runs where a total of 10B packets are sent. 
 
 ### Running the TCP FCT experiment
+
+*Estimated Time Required: 18-20 mins*
+
 The goal here is to run the flow completion time (FCT) experiment for 24,387B
 TCP flows using DCTCP transport (Figure 11(a)).
 Specifically, we will do the following steps in order:
@@ -355,8 +360,6 @@ LOSS RATE: 9.994507e-04
 ....
 ```
 (Note: Packet dropping was already enabled in the above stress test. This is just to ensure that we indeed have packet dropping enabled.)
-
-
 
 Disable LinkGuardian's protection:
 ```
@@ -433,28 +436,147 @@ experiment runs with the following command:
 ./fct_expt_tcp/display_combined_result.sh
 ```
 
-This should should show a descriptive FCT distribution for all the 3
+This should should show a descriptive FCT distribution (in µs) for all the 3
 experiments like the following:
 ```
-             10-3   10-3_lg  10-3_lg_nb
-min        65.418    69.251      64.417
-mean      124.812   121.334     120.780
-50%       124.293   125.210     124.585
-90%       128.006   140.964     143.848
-95%       134.626   159.129     159.543
-99%       166.673   162.293     167.382
-99.9%    3100.882   176.044     200.637
-99.99%   3891.492   190.711     273.385
-99.999%  3926.529   190.749     305.404
-max      3930.422   190.753     308.962
-std       144.750    19.528      20.797
-count    5000.000  5000.000    5000.000
+         No_Protection  LinkGuardian  LinkGuardianNB
+min             63.043        63.293          62.459
+mean           116.226        99.271          98.417
+50%             91.648        85.293          84.772
+90%            158.336       127.881         127.585
+95%            160.505       158.712         137.966
+99%            178.172       163.295         161.629
+99.9%         3595.336       206.555         188.505
+99.99%        4025.891       232.962         273.450
+99.999%       4128.514       235.737         316.736
+max           4139.916       236.045         321.545
+std            192.437        25.217          24.379
+count         5000.000      5000.000        5000.000
 ```
 
 The 3 columns correspond to the 3 experiment runs: no protection, protection with LinkGuardian, and protection with LinkGuardianNB. This result should be qualitatively similar to that presented in the paper and should show a clear reduction in the tail FCTs with LinkGuardian and LinkGuardianNB. 
 
+
 ### Running the RDMA FCT experiment
-TBA: We are in the process of setting up the RDMA sender/receiver in the AE testbed setup. We will update this section soon!
+
+*Estimated Time Required: 5-6 mins*
+
+The goal here is to run the flow completion time (FCT) experiment for 24,387B
+RDMA WRITE flows using NIC-based reliable delivery (Figure 11(c)).
+Specifically, we will do the following steps in order:
+1. We will enable packet dropping on link 3 (figure above) with a loss rate of 10<sup>-3<sup>.
+2. We will then run 3 experiments: (i) without any protection on the link, (ii)
+   enabling LinkGuardian on the link, (iii) enabling LinkGuardianNB on the link.
+   We will run 100K flow trials for each experiment.
+3. We will analyze the log files from the above experiments to
+   compute the FCT distributions and then observe the results.
+
+Enable packet dropping with a loss rate of 10<sup>-3</sup>:
+```
+./common/enable_pkt_dropping.sh
+```
+
+Then observe the status of the receiver switch (tofino1c) in terminal tab 3. You
+should see an output which includes the following line:
+```
+....
+LOSS RATE: 9.994507e-04
+....
+```
+
+Now, disable LinkGuardian's protection:
+```
+./common/disable_protection.sh
+```
+You should see the following output on terminal tab 2 (sender switch's status):
+```
+....
+Protected Port(s) (0): 
+....
+```
+This means that the number of protected ports by LinkGuardian is zero.
+
+Now, let's run 100K flows trials:
+```
+./fct_expt_rdma/run_expt.sh 10-3 100000
+```
+
+You should see the progress of the experiment as following:
+```
+Measuring 90966-th flow is done.
+Measuring 90967-th flow is done.
+Measuring 90968-th flow is done.
+Measuring 90969-th flow is done.
+```
+This should take a few seconds to finish.
+
+Once the experiment is over, enable LinkGuardian on the link:
+```
+./common/enable_protection.sh 1
+```
+You should see the following output on terminal tab 2 (sender switch's status):
+```
+...
+Protected Port(s) (1): 32(1)
+...
+```
+This means that the number of protected ports by LinkGuardian is 1. `32(1)` means
+that LinkGuardian is protecting devport 32 using link-local retransmission while maintaining packet ordering.
+
+Now, again run 100K flow trials:
+```
+./fct_expt_rdma/run_expt.sh 10-3_lg 100000
+```
+
+Once the experiment is over, enable LinkGuardianNB on the link:
+```
+./common/enable_protection.sh 0
+```
+You should see the following output on terminal tab 2 (sender switch's status):
+```
+...
+Protected Port(s) (1): 32(0)
+...
+```
+This means that the number of protected ports by LinkGuardian is 1. `32(0)` means
+that LinkGuardianNB is protecting devport 32 and packet ordering will *not* be
+maintained.
+
+Now, again run 100K flow trials:
+```
+./fct_expt_rdma/run_expt.sh 10-3_lg_nb 100000
+```
+
+Now, let's process the data from all 3 experiments and compute the FCTs:
+```
+./fct_expt_rdma/process_all_expts.sh
+```
+
+Once the data processing is over, you can view the combined result of all 3
+experiment runs with the following command:
+```
+./fct_expt_rdma/display_combined_result.sh
+```
+
+This should should show a descriptive FCT distribution (in µs) for all the 3
+experiments like the following:
+```
+---      No_Protection  LinkGuardian  LinkGuardianNB
+min      5.917          2.416         2.667
+mean     19.851         18.177        17.745
+50%      17.958         17.916        17.126
+90%      19.917         19.709        18.625
+95%      22.292         20.834        21.334
+99%      32.542         31.375        30.875
+99.9%    1090.19        35.583        39.584
+99.99%   1335.352       67.75         88.376
+99.999%  9194.618       103.585       1094.061
+max      12572.505      153.71        1755.938
+std      62.464         2.488         7.695
+count    100000.0       100000.0      100000.0
+```
+
+The 3 columns correspond to the 3 experiment runs: no protection, protection with LinkGuardian, and protection with LinkGuardianNB. This result should be qualitatively similar to that presented in the paper and should show a clear reduction in the tail FCTs with LinkGuardian and LinkGuardianNB.
 
 
 ### Running the throughput experiment
