@@ -1,0 +1,6 @@
+log/*
+analysis/**/*.dat
+CMakeFiles/*
+bin/*
+CMakeCache.txt
+*.cmake
