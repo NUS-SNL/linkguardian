@@ -4,7 +4,7 @@ import pandas as pd
 
 base_path = '~/traces/fct_expt_tcp'
 expt_names = ['10-3', '10-3_lg', '10-3_lg_nb']
-readable_expt_names = {'10-3':'No Protection', '10-3_lg':'LinkGuardian', '10-3_lg_nb':'LinkGuardianNB'}
+readable_expt_names = {'10-3':'No_Protection', '10-3_lg':'LinkGuardian', '10-3_lg_nb':'LinkGuardianNB'}
 
 summary_dfs = []
 
