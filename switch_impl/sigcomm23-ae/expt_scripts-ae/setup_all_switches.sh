@@ -158,6 +158,27 @@ cecho "GREEN" "All links are up with link speed $link_speed Gbps"
 echo ""
 
 ###############################################
+# Check status on all the switches
+###############################################
+echo -n "Checking status on tofino1a (sender.p4)... "
+# clear the screen and run the setup script
+ssh tofino1a-ae "tmux send-keys -t bfrt.0 C-l 'check_sender_state()' ENTER"
+cecho "GREEN" "Done"
+
+echo -n "Checking status on tofino1c (receiver.p4)... "
+# clear the screen and run the setup script
+ssh tofino1c-ae "tmux send-keys -t bfrt.0 C-l 'check_receiver_state()' ENTER"
+cecho "GREEN" "Done"
+
+echo -n "Checking status on p4campus-proc1 (topo.p4)... "
+# clear the screen and run the setup script
+ssh p4campus-proc1-ae "tmux send-keys -t bfrt.0 C-l 'check_status()' ENTER"
+cecho "GREEN" "Done"
+
+echo ""
+
+
+###############################################
 # Check connectivity via ping
 ###############################################
 
