@@ -61,7 +61,7 @@ uint64_t timespec_to_ns(struct timespec t_spec);
 /* Capacity of the completion queue (CQ) */
 #define CQ_CAPACITY (32)
 /* MAX SGE capacity */
-#define MAX_SGE (3)
+#define MAX_SGE (10)
 /* MAX work requests */
 #define MAX_WR (32)
 /* Default port where the RDMA server is listening */

@@ -92,7 +92,7 @@ First, run the RDMA server:
 
 Next, run the RDMA client:
 ```shell
->> ./bin/rdma_client -a 10.2.2.2 -f /src/24387B.txt -l /log/out.dat -n 100
+>> ./bin/rdma_client -a 10.2.2.2 -f /src/24387B.txt -l /log/out.dat -n 1000
 ```
 which sends a message of size 24387B to the server `10.2.2.2` and repeat it 100 times, and output log is written to `log/out.dat`.
 

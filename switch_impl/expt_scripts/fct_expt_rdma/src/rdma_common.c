@@ -197,7 +197,7 @@ int process_work_completion_events(struct ibv_comp_channel *comp_channel,
     /* Now we check validity and status of I/O work completions */
     for (i = 0; i < total_wc; i++) {
         if (wc[i].status != IBV_WC_SUCCESS) {
-            rdma_error("Work completion (WC) has error status: %s at index %d",
+            rdma_error("Work completion (WC) has error status: %s at index %d \n",
                        ibv_wc_status_str(wc[i].status), i);
             /* return negative value */
             return -(wc[i].status);

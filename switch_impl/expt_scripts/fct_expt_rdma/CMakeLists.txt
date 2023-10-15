@@ -22,12 +22,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Ofast -ffast-math -funroll-loops -m
 #add_compile_options("-std=c++17")
 #set(CMAKE_CXX_FLAGS "-O0  -ggdb")
 
-find_library(IBVERBS_LIBRARY ibverbs HINTS /home/mason/local/lib)
-find_library(RDMACM_LIBRARY rdmacm HINTS /home/mason/local/lib)
+find_library(IBVERBS_LIBRARY ibverbs) 
+find_library(RDMACM_LIBRARY rdmacm) 
 
 link_libraries(pthread ${IBVERBS_LIBRARY} ${RDMACM_LIBRARY})
 
-include_directories("${PROJECT_SOURCE_DIR}" "/home/mason/local/include/")
+include_directories("${PROJECT_SOURCE_DIR}")
 
 add_executable(rdma_server ${PROJECT_SOURCE_DIR}/rdma_common.c ${PROJECT_SOURCE_DIR}/rdma_server.c)
 add_executable(rdma_client ${PROJECT_SOURCE_DIR}/rdma_common.c ${PROJECT_SOURCE_DIR}/rdma_client.c)

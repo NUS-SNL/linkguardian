@@ -109,9 +109,10 @@ static int client_prepare_connection(struct sockaddr_in *s_addr)
         rdma_error("Failed to acknowledge the CM event, errno: %d \n", -errno);
         return -errno;
     }
-    printf("Trying to connect to server at : %s port: %d \n",
-           inet_ntoa(s_addr->sin_addr),
-           ntohs(s_addr->sin_port));
+    // Uncomment for debugging
+    // printf("Trying to connect to server at : %s port: %d \n",
+    //        inet_ntoa(s_addr->sin_addr),
+    //        ntohs(s_addr->sin_port));
     /* Protection Domain (PD) is similar to a "process abstraction"
      * in the operating system. All resources are tied to a particular PD.
      * And accessing recourses across PD will result in a protection fault.
@@ -250,7 +251,8 @@ static int client_connect_to_server()
                    -errno);
         return -errno;
     }
-    printf("The client is connected successfully \n");
+    // Uncomment for debugging
+    // printf("The client is connected successfully \n");
     return 0;
 }
 
@@ -398,7 +400,8 @@ static int client_remote_memory_ops(FILE *logf)
                    ret);
         return ret;
     }
-    printf("Client side WRITE is complete \n");
+    // Uncomment for debugging
+    // printf("Client side WRITE is complete \n");
 #endif
 
 #if (WRITE_READ == 0)
@@ -520,7 +523,8 @@ static int client_disconnect_and_clean()
         // we continue anyways;
     }
     rdma_destroy_event_channel(cm_event_channel);
-    printf("Client resource clean up is complete \n");
+    // Uncomment for debugging
+    // printf("Client resource clean up is complete \n");
     return 0;
 }
 
@@ -578,9 +582,10 @@ int main(int argc, char **argv)
         case 'f':
             dupinput = dupinput + 1;
             /* pass data with txt file */
-            printf("Passed file name is : %s, with len %u \n",
-                   optarg, /* filename in /src/ directory */
-                   (unsigned int)strlen(optarg) /* len */);
+            // Uncomment for debugging
+            // printf("Passed file name is : .%s, with len %u \n",
+            //        optarg, /* filename in /src/ directory */
+            //        (unsigned int)strlen(optarg) /* len */);
 
             /* get current path */
             if (getcwd(cwd, sizeof(cwd)) != NULL)
@@ -657,7 +662,8 @@ int main(int argc, char **argv)
                 rdma_error("getcwd() error \n");
                 return 1;
             }
-            logfile = concat(cwd, optarg);
+            // logfile = concat(cwd, optarg);
+            logfile = optarg;
             break;
         case 'n':
             /* number to generate messages */
@@ -675,6 +681,11 @@ int main(int argc, char **argv)
         return 1;
     }
     printf("Logging to %s\n", logfile);
+    if (access(logfile, F_OK) == 0) 
+    {
+        // file exists
+        printf("WARN: The output file already exists. Will overwrite.\n");
+    } 
     printf("---Finished parsing...\n");
 
     if (dupinput != 1)
@@ -695,17 +706,17 @@ int main(int argc, char **argv)
 
     /* open logfile */
     FILE *logf = NULL;
-    logf = fopen(logfile, "a");
+    logf = fopen(logfile, "w");
     if (logf == NULL) {
         perror("Failed to open logfile");
         exit(1);
     }
-    for (int i = 0; i < 2000000000; i++)
+    for (int i = 1; i <= num_to_run ; i++)
     {
         // start running
-        if (num_to_run <= 0)
-            break;
-        num_to_run--;
+        // if (num_to_run <= 0)
+        //     break;
+        // num_to_run--;
 
         // start processing
         ret = client_prepare_connection(&server_sockaddr);
@@ -726,7 +737,14 @@ int main(int argc, char **argv)
         if (ret)
         {
             rdma_error("Failed to setup client connection , ret = %d \n", ret);
-            break;
+            // break;
+
+            rdma_error("===> Try to make reconnection\n\n");
+            // client_disconnect_and_clean();
+            
+            rdma_error("Type anything to make reconnection:\n");
+            getchar();
+            continue;
         }
         ret = client_xchange_metadata_with_server();
         if (ret)
@@ -746,6 +764,10 @@ int main(int argc, char **argv)
             rdma_error("Failed to cleanly disconnect and clean up resources \n");
             break;
         }
+
+        if (i % 100 == 0)
+            printf("Finished %d flow trials\n", i);
+
     }
     // XXX
     free(src);
