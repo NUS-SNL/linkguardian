@@ -207,25 +207,12 @@ leading_ack: 0
 leading_ack_era: 0
 leading_ack_notify_count: 0
 ig_debug_counter: 0
-eg_debug_counter: 219702974
-timeout_pkt_no_trigger_cntr: 170068471
+eg_debug_counter: 154068921
+timeout_pkt_no_trigger_cntr: 117874721
 timeout_pkt_trigger_cntr: 0
 LOSS RATE: 0.000000e+00
-
-
 PFC resume threshold: 460 cells
 PFC pause threshold: 500 cells
-PFC curr state: 0
-PFC PAUSE frames requested: 0
-PFC RESUME frames requested: 0
-PFC PAUSE frames sent: 0
-PFC RESUME frames sent: 0
-PFC gen frames dropped: 172060567
-PFC gen on loss noti enabled: False (N/A cells)
-
-
-lack_updates_sent_for_mirroring: 0
-lack_updates_received_after_mirroring: 0
 ```
 This output check is only to verify that you have configured the third terminal tab
 correctly.

@@ -116,8 +116,8 @@ def check_receiver_state():
     pause_frames_sent = cntr_eg_debug.get(COUNTER_INDEX=4, from_hw=1, print_ents=0).data[b'$COUNTER_SPEC_PKTS']
     resume_frames_sent = cntr_eg_debug.get(COUNTER_INDEX=5, from_hw=1, print_ents=0).data[b'$COUNTER_SPEC_PKTS']
 
-    lack_updates_sent_for_mirroring = cntr_ig_debug2.get(COUNTER_INDEX=0, from_hw=True, print_ents=False).data[b'$COUNTER_SPEC_PKTS']
-    lack_updates_received_after_mirroring = cntr_eg_debug.get(COUNTER_INDEX=6, from_hw=True, print_ents=False).data[b'$COUNTER_SPEC_PKTS']
+    # lack_updates_sent_for_mirroring = cntr_ig_debug2.get(COUNTER_INDEX=0, from_hw=True, print_ents=False).data[b'$COUNTER_SPEC_PKTS']
+    # lack_updates_received_after_mirroring = cntr_eg_debug.get(COUNTER_INDEX=6, from_hw=True, print_ents=False).data[b'$COUNTER_SPEC_PKTS']
 
     pfc_loss_noti_entry = tbl_add_pfc_c1_quanta.get(egress_port=36, print_ents=0)
 
@@ -142,19 +142,19 @@ def check_receiver_state():
     print("LOSS RATE: {:e}".format(loss_rate))
     # print("\nECN Marking Threshold: {}KB ({} cells)".format(ecn_threshold_kb,
     # cells))
-    print("\n")
+    # print("\n")
     print("PFC resume threshold: {} cells".format(resume_threshold))
     print("PFC pause threshold: {} cells".format(pause_threshold))
-    print("PFC curr state: {}".format(pfc_curr_state))
-    print("PFC PAUSE frames requested: {}".format(pause_frames_requested))
-    print("PFC RESUME frames requested: {}".format(resume_frames_requested))
-    print("PFC PAUSE frames sent: {}".format(pause_frames_sent))
-    print("PFC RESUME frames sent: {}".format(resume_frames_sent))
-    print("PFC gen frames dropped: {}".format(pfc_gen_frames_dropped))
-    print("PFC gen on loss noti enabled: {} ({} cells)".format(pfc_on_loss_noti_enabled, pfc_loss_noti_quanta))
-    print("\n")
-    print("lack_updates_sent_for_mirroring: {}".format(lack_updates_sent_for_mirroring))
-    print("lack_updates_received_after_mirroring: {}".format(lack_updates_received_after_mirroring))
+    # print("PFC curr state: {}".format(pfc_curr_state))
+    # print("PFC PAUSE frames requested: {}".format(pause_frames_requested))
+    # print("PFC RESUME frames requested: {}".format(resume_frames_requested))
+    # print("PFC PAUSE frames sent: {}".format(pause_frames_sent))
+    # print("PFC RESUME frames sent: {}".format(resume_frames_sent))
+    # print("PFC gen frames dropped: {}".format(pfc_gen_frames_dropped))
+    # print("PFC gen on loss noti enabled: {} ({} cells)".format(pfc_on_loss_noti_enabled, pfc_loss_noti_quanta))
+    # print("\n")
+    # print("lack_updates_sent_for_mirroring: {}".format(lack_updates_sent_for_mirroring))
+    # print("lack_updates_received_after_mirroring: {}".format(lack_updates_received_after_mirroring))
 
 
 def get_ig_debug_counter():
