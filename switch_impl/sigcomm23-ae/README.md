@@ -353,7 +353,7 @@ command on lumos (terminal tab 1):
 ./effective_lossRate_linkSpeed/run_expt.sh 10-3_lg_nb 0
 ```
 
-This experiment will also finish with the similar output as above.
+This experiment will also finish with similar output as above.
 
 At the end of each experiment, the data files from the switches
 are already copied to lumos. You can check them on terminal tab 1 using the
@@ -660,10 +660,10 @@ The 3 columns correspond to the 3 experiment runs: no protection, protection wit
 
 The goal here is to run the throughput test corresponding to Table 3 of the paper.
 Specifically, we will do the following steps in order:
-1. We will change the speed of all links to 10G (figure above). This will allow
+1. We will change the speed of all links to 10G (topology diagram above). This will allow
    a single TCP sender to easily saturate the entire link speed.
-2. We will enable packet dropping on link 3 (figure above) with a loss rate of
-   10<sup>-3<sup>.
+2. We will enable packet dropping on link 3 (topology diagram above) with a loss rate of
+   10<sup>-3</sup>.
 3. We will then run 3 throughput experiments: (i) without any protection on the
    link, (ii) enabling LinkGuardian on the link, (iii) enabling LinkGuardianNB
    on the link. We will run each experiment for 70s with CUBIC as the congestion
