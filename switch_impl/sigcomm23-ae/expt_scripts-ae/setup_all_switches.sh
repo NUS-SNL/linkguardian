@@ -68,22 +68,57 @@ fi
 # Start the driver on all the switches
 ###############################################
 echo -n "Starting switchd on tofino1a (sender.p4)... "
+# make sure we are in the SDE directory
+ssh tofino1a-ae "tmux send-keys -t driver.0 'cd /home/sigcomm23ae/bf-sde-9.10.0' ENTER C-l"
 # clear the screen and start the driver
 ssh tofino1a-ae "tmux send-keys -t driver.0 C-l './run_switchd.sh -p sender' ENTER"
 cecho "GREEN" "Done"
 
 echo -n "Starting switchd on tofino1c (receiver.p4)... "
+# make sure we are in the SDE directory
+ssh tofino1c-ae "tmux send-keys -t driver.0 'cd /home/sigcomm23ae/bf-sde-9.9.0' ENTER C-l"
 # clear the screen and start the driver
 ssh tofino1c-ae "tmux send-keys -t driver.0 C-l './run_switchd.sh -p receiver$file_ext' ENTER"
 cecho "GREEN" "Done"
 
 echo -n "Starting switchd on p4campus-proc1 (topo.p4)... "
+# make sure we are in the SDE directory
+ssh p4campus-proc1-ae "tmux send-keys -t driver.0 'cd /home/sigcomm23ae/bf-sde-9.11.1' ENTER C-l"
 # clear the screen and start the driver
 ssh p4campus-proc1-ae "tmux send-keys -t driver.0 C-l './run_switchd.sh -p topo' ENTER"
 cecho "GREEN" "Done"
 
 echo ""
 
+
+###############################################
+# Check bfrt tmux sessions on all switches
+###############################################
+
+echo -n "Checking and ensuring bfrt tmux session on all switches... "
+
+ssh tofino1a-ae "tmux has-session -t bfrt 2>/dev/null"
+if [ $? != 0 ]; then
+  ssh tofino1a-ae "tmux new -d -s bfrt"
+fi
+
+ssh tofino1c-ae "tmux has-session -t bfrt 2>/dev/null"
+if [ $? != 0 ]; then
+  ssh tofino1c-ae "tmux new -d -s bfrt"
+fi
+
+ssh p4campus-proc1-ae "tmux has-session -t bfrt 2>/dev/null"
+if [ $? != 0 ]; then
+  ssh p4campus-proc1-ae "tmux new -d -s bfrt"
+fi
+
+
+# Make sure each bfrt session is in the correct directory
+ssh tofino1a-ae "tmux send-keys -t bfrt.0 'cd /home/sigcomm23ae/bf-sde-9.10.0' ENTER C-l"
+ssh tofino1c-ae "tmux send-keys -t bfrt.0 'cd /home/sigcomm23ae/bf-sde-9.9.0' ENTER C-l"
+ssh p4campus-proc1-ae "tmux send-keys -t bfrt.0 'cd /home/sigcomm23ae/bf-sde-9.11.1' ENTER C-l"
+
+cecho "GREEN" "Done"
 
 ###############################################
 # Run the setup script all the switches
