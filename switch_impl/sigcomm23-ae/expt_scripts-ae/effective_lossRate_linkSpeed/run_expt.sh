@@ -29,7 +29,7 @@ ssh tofino1a-ae "tmux send-keys -t bfrt.0 C-l 'run_effective_lossRate_linkSpeed_
 # TODO: qualify the argument names
 ssh tofino1a-ae "tmux send-keys -t bfrt.0 'copy_sw_data_effective_lossRate_linkSpeed_expt(\"$expt_name\", $nb_mode, \"lumos-ae\", \"/home/sigcomm23ae/linkguardian/switch_impl/sigcomm23-ae/expt_scripts-ae/effective_lossRate_linkSpeed\")' ENTER ENTER"
 
-echo "Please check the bfrt tmux session on the sender switch for status of the experiment"
+echo "Please check terminal tab 2 (bfrt tmux session on the sender sw) for status of the experiment"
 
 
 
